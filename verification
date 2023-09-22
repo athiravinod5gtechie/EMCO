@@ -1,0 +1,3 @@
+If you want to verify services later in the setup, use command: 
+
+kubectl get svc -A 
