@@ -1,0 +1,38 @@
+Prerequisites 
+#################################
+Ubuntu 20.04.5 
+Kubeadm Cluster 
+docker (v18.09.6 or later) 
+helm (v3.3.4 or later) 
+kubectl (v1.19.0 or later) 
+##################################
+How to setup Prerequisites(2 – 5) 
+#################################
+NB : Instead of ./start.sh in the repo mentioned in this video Deploying Edge-Multicluster orchestrator (EMCO) on KOO(Kubernetes On OpenStack)  Cluster, broke down the steps to make troubleshooting easier. 
+#installing kubeadm,kubectl,kubelet 
+sudo apt-get update 
+sudo apt-get install -y apt-transport-https ca-certificates curl 
+sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://dl.k8s.io/apt/doc/apt-key.gpg 
+echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list 
+sudo apt-get update 
+sudo apt-get install -y kubelet kubeadm kubectl 
+sudo apt-mark hold kubelet kubeadm kubectl 
+#Docker 
+curl -fsSL https://get.docker.com -o get-docker.sh 
+sudo sh get-docker.sh 
+#Resolving container runtime errors: 
+sudo systemctl restart containerd 
+#Create cluster: 
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16 
+mkdir -p $HOME/.kube 
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config 
+sudo chown $(id -u):$(id -g) $HOME/.kube/config 
+kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml 
+kubectl taint nodes --all node-role.kubernetes.io/control-plane:NoSchedule- 
+#Installing Helm 
+curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null 
+sudo apt-get install apt-transport-https –yes 
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list 
+sudo apt-get update 
+sudo apt-get install helm 
+kubectl get pods  -A 
