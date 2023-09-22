@@ -1,0 +1,20 @@
+Installation  
+########################################################################################
+Ref: https://github.com/wafi981/EMCO_DEV/blob/main/Start.md 
+########################################################################################
+mkdir work 
+cd  work 
+git clone https://gitlab.com/project-emco/core/emco-base.git 
+cd emco-base 
+#Docker Registry 
+docker run -d -p 5000:5000 --name registry registry:2.7 
+curl localhost:5000 
+#Set EMCODOCKERREPO 
+export EMCODOCKERREPO=localhost:5000/ 
+#Make-deploy 
+make build-base 
+export BUILD_CAUSE=DEV_TEST 
+make deploy 
+#Run Installation Script 
+cd bin/helm 
+./emco-base-helm-install.sh -k /home/ubuntu/.kube/config -p disable -s 'enableDbAuth=false' install 
